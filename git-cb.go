@@ -5,6 +5,7 @@ import (
 	"github.com/nsf/termbox-go"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func drawLine(x, y int, str string, color termbox.Attribute) {
@@ -41,6 +42,10 @@ func clear() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 }
 
+func flush() {
+	termbox.Flush()
+}
+
 func drawWithKey(key termbox.Key, b *Branches) {
 	clear()
 	var y int
@@ -59,10 +64,11 @@ func drawWithKey(key termbox.Key, b *Branches) {
 		drawBranches(1, y, b)
 	}
 
-	termbox.Flush()
+	flush()
 }
 
-func pollEvent(branches *Branches) {
+func pollEvent(git *Git) {
+	branches := git.Branches()
 	draw(branches)
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
@@ -71,8 +77,13 @@ func pollEvent(branches *Branches) {
 			case termbox.KeyEsc, termbox.KeyCtrlC:
 				return
 			case termbox.KeyEnter:
-				// TODO: Change Branch
-				return
+				if out, err := git.CheckOut(branches.SelectedBranch()); err != nil {
+					clear()
+					drawLine(1, 1, string(out), termbox.ColorRed)
+					flush()
+				} else {
+					return
+				}
 			default:
 				drawWithKey(ev.Key, branches)
 			}
@@ -88,11 +99,18 @@ func main() {
 		panic(err)
 	}
 
-	defer termbox.Close()
+	defer func() {
+		if r := recover(); r != nil {
+			clear()
+			drawLine(0, 0, fmt.Sprintf("%v", r), termbox.ColorRed)
+			flush()
+			time.Sleep(3 * time.Second)
+		}
+		termbox.Close()
+	}()
 
 	git := NewGit("./")
-	branches := git.Branches()
-	pollEvent(branches)
+	pollEvent(git)
 }
 
 type Git struct {
@@ -129,6 +147,11 @@ func (g *Git) Branches() *Branches {
 	return &Branches{values: branches, current: current}
 }
 
+func (g *Git) CheckOut(revision string) ([]byte, error) {
+	revision = strings.Trim(revision, " *")
+	return exec.Command(g.binary, "checkout", revision).CombinedOutput()
+}
+
 type Branches struct {
 	values   []string
 	current  int
@@ -147,4 +170,12 @@ func (b *Branches) Down() int {
 		b.selected += 1
 	}
 	return b.selected
+}
+
+func (b *Branches) SelectedBranch() string {
+	return b.values[b.selected]
+}
+
+func (b *Branches) CurrentBranch() string {
+	return b.values[b.current]
 }
