@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/nsf/termbox-go"
 	"github.com/yagince/gitx"
-	"os/exec"
-	"strings"
 	"time"
 )
 
@@ -18,14 +16,14 @@ func drawLine(x, y int, str string, color termbox.Attribute) {
 	}
 }
 
-func drawBranches(x, y int, b *Branches) {
-	for i, branch := range b.values {
+func drawBranches(x, y int, b *gitx.Branches) {
+	for i, branch := range b.Values {
 		y += 1
 
 		var color termbox.Attribute
-		if i == b.selected {
+		if i == b.Selected {
 			color = termbox.ColorGreen
-		} else if i == b.current {
+		} else if i == b.Current {
 			color = termbox.ColorMagenta
 		} else {
 			color = termbox.ColorDefault
@@ -35,7 +33,7 @@ func drawBranches(x, y int, b *Branches) {
 	}
 }
 
-func draw(b *Branches) {
+func draw(b *gitx.Branches) {
 	drawWithKey(0, b)
 }
 
@@ -47,12 +45,12 @@ func flush() {
 	termbox.Flush()
 }
 
-func drawWithKey(key termbox.Key, b *Branches) {
+func drawWithKey(key termbox.Key, b *gitx.Branches) {
 	clear()
 	var y int
 	drawLine(0, y, "Press ESC or Ctrl+C to exit.", termbox.ColorDefault)
 	y += 1
-	drawLine(0, y, fmt.Sprintf("-- %d branches", len(b.values)), termbox.ColorDefault)
+	drawLine(0, y, fmt.Sprintf("-- %d branches", len(b.Values)), termbox.ColorDefault)
 
 	switch key {
 	case termbox.KeyCtrlN:
@@ -68,7 +66,7 @@ func drawWithKey(key termbox.Key, b *Branches) {
 	flush()
 }
 
-func pollEvent(git *Git) {
+func pollEvent(git *gitx.Git) {
 	branches := git.Branches()
 	draw(branches)
 	for {
@@ -110,6 +108,6 @@ func main() {
 		termbox.Close()
 	}()
 
-	git := NewGit("./")
+	git := gitx.NewGit("./")
 	pollEvent(git)
 }

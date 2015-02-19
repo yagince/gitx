@@ -1,29 +1,29 @@
 package gitx
 
 type Branches struct {
-	values   []string
-	current  int
-	selected int
+	Values   []string
+	Current  int
+	Selected int
 }
 
 func (b *Branches) Up() int {
-	if b.selected != 0 {
-		b.selected -= 1
+	if b.Selected != 0 {
+		b.Selected -= 1
 	}
-	return b.selected
+	return b.Selected
 }
 
 func (b *Branches) Down() int {
-	if (b.selected + 1) < len(b.values) {
-		b.selected += 1
+	if (b.Selected + 1) < len(b.Values) {
+		b.Selected += 1
 	}
-	return b.selected
+	return b.Selected
 }
 
 func (b *Branches) SelectedBranch() string {
-	return b.values[b.selected]
+	return b.Values[b.Selected]
 }
 
 func (b *Branches) CurrentBranch() string {
-	return b.values[b.current]
+	return b.Values[b.Current]
 }

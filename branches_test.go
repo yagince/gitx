@@ -5,40 +5,40 @@ import (
 )
 
 func TestBranchesUp(t *testing.T) {
-	branches := Branches{values: []string{"hoge", "foo"}}
+	branches := Branches{Values: []string{"hoge", "foo"}}
 
 	branches.Up()
-	if branches.selected != 0 {
-		t.Error("selectedが0の場合はupしても0")
+	if branches.Selected != 0 {
+		t.Error("Selectedが0の場合はupしても0")
 	}
 
-	branches.selected = 10
+	branches.Selected = 10
 	branches.Up()
-	if branches.selected != 9 {
-		t.Error("selectedが1以上の場合は-1される")
+	if branches.Selected != 9 {
+		t.Error("Selectedが1以上の場合は-1される")
 	}
 }
 
 func TestBranchesDown(t *testing.T) {
-	branches := Branches{values: []string{"hoge", "foo"}}
+	branches := Branches{Values: []string{"hoge", "foo"}}
 
 	branches.Down()
-	if branches.selected != 1 {
-		t.Error("selectedが0の場合はdownすると1")
+	if branches.Selected != 1 {
+		t.Error("Selectedが0の場合はdownすると1")
 	}
 
-	branches.selected = 1
+	branches.Selected = 1
 	branches.Down()
-	if branches.selected != 1 {
-		t.Error("selectedが末尾の場合はdownしても変わらない")
+	if branches.Selected != 1 {
+		t.Error("Selectedが末尾の場合はdownしても変わらない")
 	}
 }
 
 func TestBranchesSelectedBranchName(t *testing.T) {
-	branches := Branches{values: []string{"hoge", "foo"}}
+	branches := Branches{Values: []string{"hoge", "foo"}}
 
 	if branches.SelectedBranch() != "hoge" {
-		t.Error("default selected branch is index:0")
+		t.Error("default Selected branch is index:0")
 	}
 
 	branches.Down()
@@ -53,10 +53,10 @@ func TestBranchesSelectedBranchName(t *testing.T) {
 }
 
 func TestBranchesCurrentBranchName(t *testing.T) {
-	branches := Branches{values: []string{"hoge", "foo"}, current: 1}
+	branches := Branches{Values: []string{"hoge", "foo"}, Current: 1}
 
 	if branches.CurrentBranch() != "foo" {
-		t.Error("current is index:1")
+		t.Error("Current is index:1")
 	}
 
 	branches.Down()

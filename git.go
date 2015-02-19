@@ -36,7 +36,7 @@ func (g *Git) Branches() *Branches {
 			current = i
 		}
 	}
-	return &Branches{values: branches, current: current}
+	return &Branches{Values: branches, Current: current}
 }
 
 func (g *Git) CheckOut(revision string) ([]byte, error) {
