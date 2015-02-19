@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/nsf/termbox-go"
-	"time"
+	"os/exec"
+	"strings"
 )
 
 func drawLine(x, y int, str string, color termbox.Attribute) {
@@ -22,6 +23,8 @@ func drawBranches(x, y int, b *Branches) {
 		var color termbox.Attribute
 		if i == b.selected {
 			color = termbox.ColorGreen
+		} else if i == b.current {
+			color = termbox.ColorMagenta
 		} else {
 			color = termbox.ColorDefault
 		}
@@ -41,14 +44,16 @@ func clear() {
 func drawWithKey(key termbox.Key, b *Branches) {
 	clear()
 	var y int
-	drawLine(0, y, fmt.Sprintf("Press ESC or Ctrl+C to exit. %d %s", key, time.Now()), termbox.ColorDefault)
+	drawLine(0, y, "Press ESC or Ctrl+C to exit.", termbox.ColorDefault)
+	y += 1
+	drawLine(0, y, fmt.Sprintf("-- %d branches", len(b.values)), termbox.ColorDefault)
 
 	switch key {
 	case termbox.KeyCtrlN:
-		b.down()
+		b.Down()
 		drawBranches(1, y, b)
 	case termbox.KeyCtrlP:
-		b.up()
+		b.Up()
 		drawBranches(1, y, b)
 	default:
 		drawBranches(1, y, b)
@@ -57,8 +62,7 @@ func drawWithKey(key termbox.Key, b *Branches) {
 	termbox.Flush()
 }
 
-func pollEvent() {
-	branches := &Branches{values: []string{"hoge", "foo", "bar", "buzz"}}
+func pollEvent(branches *Branches) {
 	draw(branches)
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
@@ -86,14 +90,43 @@ func main() {
 
 	defer termbox.Close()
 
-	pollEvent()
+	git := NewGit("./")
+	branches := git.Branches()
+	pollEvent(branches)
 }
 
 type Git struct {
+	binary    string
 	directory string
 }
 
-func (g *Git) branches() {
+func NewGit(directory string) *Git {
+	var binary string
+	var err error
+	if binary, err = exec.LookPath("git"); err != nil {
+		panic(err)
+	}
+	return &Git{binary: binary, directory: directory}
+}
+
+func (g *Git) Branches() *Branches {
+	lf := "\n"
+	cmd := exec.Command(g.binary, "branch")
+
+	var out []byte
+	var err error
+	if out, err = cmd.Output(); err != nil {
+		panic(err)
+	}
+
+	branches := strings.Split(strings.TrimRight(string(out), lf), lf)
+	var current int
+	for i, b := range branches {
+		if strings.IndexAny(b, "*") == 0 {
+			current = i
+		}
+	}
+	return &Branches{values: branches, current: current}
 }
 
 type Branches struct {
@@ -102,14 +135,14 @@ type Branches struct {
 	selected int
 }
 
-func (b *Branches) up() int {
+func (b *Branches) Up() int {
 	if b.selected != 0 {
 		b.selected -= 1
 	}
 	return b.selected
 }
 
-func (b *Branches) down() int {
+func (b *Branches) Down() int {
 	if (b.selected + 1) < len(b.values) {
 		b.selected += 1
 	}
