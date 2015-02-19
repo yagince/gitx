@@ -1,0 +1,4 @@
+.godeps
+*.lock
+
+sample.go
