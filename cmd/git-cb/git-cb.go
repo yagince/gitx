@@ -53,10 +53,10 @@ func drawWithKey(key termbox.Key, b *gitx.Branches) {
 	drawLine(0, y, fmt.Sprintf("-- %d branches", len(b.Values)), termbox.ColorDefault)
 
 	switch key {
-	case termbox.KeyCtrlN:
+	case termbox.KeyCtrlN, termbox.KeyArrowDown:
 		b.Down()
 		drawBranches(1, y, b)
-	case termbox.KeyCtrlP:
+	case termbox.KeyCtrlP, termbox.KeyArrowUp:
 		b.Up()
 		drawBranches(1, y, b)
 	default:
