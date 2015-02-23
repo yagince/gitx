@@ -8,8 +8,8 @@ func TestBranchesUp(t *testing.T) {
 	branches := Branches{Values: []string{"hoge", "foo"}}
 
 	branches.Up()
-	if branches.Selected != 0 {
-		t.Error("Selectedが0の場合はupしても0")
+	if branches.Selected != 1 {
+		t.Error("Selectedが0の場合はupすると末尾になる")
 	}
 
 	branches.Selected = 10
@@ -29,8 +29,8 @@ func TestBranchesDown(t *testing.T) {
 
 	branches.Selected = 1
 	branches.Down()
-	if branches.Selected != 1 {
-		t.Error("Selectedが末尾の場合はdownしても変わらない")
+	if branches.Selected != 0 {
+		t.Error("Selectedが末尾の場合はdownすると先頭になる")
 	}
 }
 
