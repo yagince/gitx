@@ -1,4 +1,5 @@
-.godeps
+/.godeps
+/vendor/*
 *.lock
 
 sample.go
