@@ -9,19 +9,19 @@ import (
 	"os/exec"
 )
 
-type Brunch struct {
-	BrunchType  string
+type Branch struct {
+	BranchType  string
 	IssueNumber string
 	Description string
 }
 
-func (b Brunch) Print() {
-	log.Printf("%s:\t%s", color.GreenString("BrunchType"), color.CyanString(b.BrunchType))
+func (b Branch) Print() {
+	log.Printf("%s:\t%s", color.GreenString("BranchType"), color.CyanString(b.BranchType))
 	log.Printf("%s:\t%s", color.GreenString("IssueNumber"), color.CyanString(b.IssueNumber))
 	log.Printf("%s:\t%s", color.GreenString("Description"), color.CyanString(b.Description))
 }
 
-func (b Brunch) Start() {
+func (b Branch) Start() {
 	out, err := exec.Command("git", "checkout", "-b", b.Name()).CombinedOutput()
 	if err != nil {
 		log.Println(color.RedString("Error has occured"))
@@ -31,8 +31,8 @@ func (b Brunch) Start() {
 	log.Print(string(out))
 }
 
-func (b Brunch) Name() string {
-	return fmt.Sprintf("%s/%s-%s", b.BrunchType, b.IssueNumber, b.Description)
+func (b Branch) Name() string {
+	return fmt.Sprintf("%s/%s-%s", b.BranchType, b.IssueNumber, b.Description)
 }
 
 func main() {
@@ -42,24 +42,24 @@ func main() {
 
 	if len(args) < 3 {
 		log.Println(color.RedString("arguments was not enough"))
-		log.Println("ex) git start f 1234 start-brunch")
+		log.Println("ex) git start f 1234 start-branch")
 		os.Exit(1)
 	}
 
-	brunchType := detectBrunchType(args[0])
+	branchType := detectBranchType(args[0])
 	issueNumber := args[1]
 	description := args[2]
 
-	brunch := Brunch{
-		BrunchType:  brunchType,
+	branch := Branch{
+		BranchType:  branchType,
 		IssueNumber: issueNumber,
 		Description: description,
 	}
-	brunch.Print()
-	brunch.Start()
+	branch.Print()
+	branch.Start()
 }
 
-func detectBrunchType(str string) string {
+func detectBranchType(str string) string {
 	switch str {
 	case "f":
 		return "feature"
