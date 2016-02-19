@@ -1,0 +1,6 @@
+package: .
+import:
+- package: github.com/nsf/termbox-go
+  version: 362329b
+- package: github.com/fatih/color
+  version: 7a5857d
