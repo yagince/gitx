@@ -20,4 +20,4 @@ checkout by selecting from a list of branch
 
 create a new branch with branch-type and issue-number
 
-![create branch](https://gyazo.com/64c6f28297090fc8f853b8102e29b7a1)
+![create branch](https://gyazo.com/64c6f28297090fc8f853b8102e29b7a1.gif)
