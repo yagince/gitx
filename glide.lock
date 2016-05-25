@@ -1,0 +1,18 @@
+hash: 2cdfd58e83ee0a0925a6b9c2dce148e840e5f4a93c24148b76c9c5377bb0c1c8
+updated: 2016-05-25T19:07:54.943316853+09:00
+imports:
+- name: github.com/fatih/color
+  version: 7a5857db0b2752a436d8461d88c42dea0ee191c0
+- name: github.com/mattn/go-colorable
+  version: e8a10ddc7d2a7fe255f6fd7f501070a4cb62c183
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/mattn/go-runewidth
+  version: d6bea18f789704b5f83375793155289da36a3c7f
+- name: github.com/nsf/termbox-go
+  version: 362329b0aa6447eadd52edd8d660ec1dff470295
+- name: golang.org/x/sys
+  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  subpackages:
+  - unix
+devImports: []
