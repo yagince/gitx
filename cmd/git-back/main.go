@@ -7,6 +7,29 @@ import (
 	"time"
 )
 
+type Context struct {
+	logs               []*gitx.Reflog
+	selectedLineNumber int
+}
+
+func (c *Context) Up() int {
+	if c.selectedLineNumber > 0 {
+		c.selectedLineNumber -= 1
+	} else {
+		c.selectedLineNumber = len(c.logs) - 1
+	}
+	return c.selectedLineNumber
+}
+
+func (c *Context) Down() int {
+	if c.selectedLineNumber < len(c.logs)-1 {
+		c.selectedLineNumber += 1
+	} else {
+		c.selectedLineNumber = 0
+	}
+	return c.selectedLineNumber
+}
+
 func drawLine(x, y int, str string, color termbox.Attribute) {
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
@@ -24,43 +47,41 @@ func flush() {
 	termbox.Flush()
 }
 
-func draw(b []*gitx.Reflog) {
-	drawWithKey(0, b)
+func draw(c *Context) {
+	drawWithKey(0, c)
 }
 
-func drawWithKey(key termbox.Key, logs []*gitx.Reflog) {
+func drawWithKey(key termbox.Key, c *Context) {
 	clear()
 	var y int
 	drawLine(0, y, "Press ESC or Ctrl+C to exit.", termbox.ColorDefault)
 	y += 1
-	drawLine(0, y, fmt.Sprintf("-- %d logs", len(logs)), termbox.ColorDefault)
+	drawLine(0, y, fmt.Sprintf("-- %d logs", len(c.logs)), termbox.ColorDefault)
 
 	switch key {
 	case termbox.KeyCtrlN, termbox.KeyArrowDown:
-		// TODO: 選択列下げる
-		drawLogs(1, y, logs)
+		c.Down()
+		drawLogs(1, y, c)
 	case termbox.KeyCtrlP, termbox.KeyArrowUp:
-		// TODO: 選択列上げる
-		drawLogs(1, y, logs)
+		c.Up()
+		drawLogs(1, y, c)
 	default:
-		drawLogs(1, y, logs)
+		drawLogs(1, y, c)
 	}
 
 	flush()
 }
 
-func drawLogs(x, y int, logs []*gitx.Reflog) {
-	for _, log := range logs {
+func drawLogs(x, y int, c *Context) {
+	for i, log := range c.logs {
 		y += 1
 
 		var color termbox.Attribute
-		// if i == b.Selected {
-		// 	color = termbox.ColorGreen
-		// } else if i == b.Current {
-		// 	color = termbox.ColorMagenta
-		// } else {
-		color = termbox.ColorDefault
-		// }
+		if i == c.selectedLineNumber {
+			color = termbox.ColorGreen
+		} else {
+			color = termbox.ColorDefault
+		}
 
 		drawLine(1, y, log.String(), color)
 	}
@@ -68,7 +89,8 @@ func drawLogs(x, y int, logs []*gitx.Reflog) {
 
 func pollEvent(git *gitx.Git) {
 	logs := git.Reflog(0)
-	draw(logs)
+	context := &Context{logs: logs}
+	draw(context)
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
@@ -81,13 +103,13 @@ func pollEvent(git *gitx.Git) {
 				// 	drawLine(1, 1, string(out), termbox.ColorRed)
 				// 	flush()
 				// } else {
-				// 	return
+				return
 				// }
 			default:
-				drawWithKey(ev.Key, logs)
+				drawWithKey(ev.Key, context)
 			}
 		default:
-			draw(logs)
+			draw(context)
 		}
 	}
 }
