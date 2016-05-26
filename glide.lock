@@ -1,5 +1,5 @@
-hash: 2cdfd58e83ee0a0925a6b9c2dce148e840e5f4a93c24148b76c9c5377bb0c1c8
-updated: 2016-05-25T19:07:54.943316853+09:00
+hash: 9b3d6d5cec9a35189c52ccce057e3c6122765a11a758c94d9ac2b60e5275c7a3
+updated: 2016-05-26T10:42:25.44339983+09:00
 imports:
 - name: github.com/fatih/color
   version: 7a5857db0b2752a436d8461d88c42dea0ee191c0
@@ -11,6 +11,8 @@ imports:
   version: d6bea18f789704b5f83375793155289da36a3c7f
 - name: github.com/nsf/termbox-go
   version: 362329b0aa6447eadd52edd8d660ec1dff470295
+- name: github.com/stretchr/testify
+  version: 8d64eb7173c7753d6419fd4a9caf057398611364
 - name: golang.org/x/sys
   version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
   subpackages:
