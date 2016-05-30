@@ -84,6 +84,10 @@ func (c *Context) FilteredLogs() []*gitx.Reflog {
 	return logs
 }
 
+func (c Context) SelectedLog() *gitx.Reflog {
+	return c.filteredLogs[c.selectedLineNumber]
+}
+
 func drawLine(x, y int, str string, color termbox.Attribute) {
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
@@ -156,7 +160,10 @@ func pollEvent(context *Context, ch chan<- bool) {
 				ch <- true
 				return
 			case termbox.KeyEnter:
-				// TODO: checkout reflog revision
+				clear()
+				drawLine(1, 1, context.SelectedLog().String(), termbox.ColorCyan)
+				flush()
+				time.Sleep(3 * time.Second)
 				ch <- true
 				return
 			default:
