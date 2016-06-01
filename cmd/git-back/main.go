@@ -150,14 +150,14 @@ func drawLogs(x, y int, c *Context) {
 	}
 }
 
-func pollEvent(context *Context, ch chan<- bool) {
+func pollEvent(context *Context, ch chan<- string) {
 	draw(context)
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
 			switch ev.Key {
 			case termbox.KeyEsc, termbox.KeyCtrlC:
-				ch <- true
+				ch <- "bye"
 				return
 			case termbox.KeyEnter:
 				if out, err := context.git.CheckOut(context.SelectedLog().History); err != nil {
@@ -165,7 +165,7 @@ func pollEvent(context *Context, ch chan<- bool) {
 					drawLine(1, 1, string(out), termbox.ColorRed)
 					flush()
 				} else {
-					ch <- true
+					ch <- string(out)
 					return
 				}
 			default:
@@ -183,6 +183,8 @@ func main() {
 		panic(err)
 	}
 
+	var output string
+
 	defer func() {
 		if err := recover(); err != nil {
 			clear()
@@ -191,6 +193,8 @@ func main() {
 			time.Sleep(3 * time.Second)
 		}
 		termbox.Close()
+
+		fmt.Println(output)
 	}()
 
 	termbox.SetInputMode(termbox.InputAlt)
@@ -198,8 +202,8 @@ func main() {
 	git := gitx.NewGit("./")
 	logs := git.Reflog(0)
 	context := NewContext(git, logs)
-	ch := make(chan bool)
+	ch := make(chan string, 1)
 
 	go pollEvent(context, ch)
-	<-ch
+	output = <-ch
 }
