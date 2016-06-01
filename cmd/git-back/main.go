@@ -6,6 +6,7 @@ import (
 	"github.com/nsf/termbox-go"
 	"github.com/yagince/gitx"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -164,7 +165,9 @@ func pollEvent(context *Context, ch chan<- string) {
 			case termbox.KeyEnter:
 				if out, err := context.git.CheckOut(context.SelectedLog().History); err != nil {
 					clear()
-					drawLine(1, 1, string(out), termbox.ColorRed)
+					for i, line := range strings.Split(string(out), "\n") {
+						drawLine(1, i+1, line, termbox.ColorRed)
+					}
 					flush()
 
 					time.Sleep(3 * time.Second)
