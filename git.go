@@ -2,6 +2,7 @@ package gitx
 
 import (
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -42,4 +43,32 @@ func (g *Git) Branches() *Branches {
 func (g *Git) CheckOut(revision string) ([]byte, error) {
 	revision = strings.Trim(revision, " *")
 	return exec.Command(g.binary, "checkout", revision).CombinedOutput()
+}
+
+func (g *Git) Reflog(logNum int) []*Reflog {
+	lf := "\n"
+
+	options := []string{
+		"reflog",
+	}
+
+	if logNum != 0 {
+		options = append(options, "-n", strconv.Itoa(logNum))
+	}
+
+	out, err := exec.Command(g.binary, options...).CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+
+	logs := strings.Split(strings.TrimRight(string(out), lf), lf)
+	reflogs := make([]*Reflog, len(logs))
+	for i, log := range logs {
+		reflog, err := NewReflog(log)
+		if err != nil {
+			panic(err)
+		}
+		reflogs[i] = reflog
+	}
+	return reflogs
 }
