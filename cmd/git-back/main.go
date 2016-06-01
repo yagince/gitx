@@ -166,6 +166,10 @@ func pollEvent(context *Context, ch chan<- string) {
 					clear()
 					drawLine(1, 1, string(out), termbox.ColorRed)
 					flush()
+
+					time.Sleep(3 * time.Second)
+
+					draw(context)
 				} else {
 					ch <- string(out)
 					return
