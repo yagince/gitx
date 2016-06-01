@@ -5,3 +5,4 @@ import:
 - package: github.com/fatih/color
   version: 7a5857d
 - package: github.com/stretchr/testify
+- package: github.com/mattn/go-runewidth

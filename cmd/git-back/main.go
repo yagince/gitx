@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/mattn/go-runewidth"
 	"github.com/nsf/termbox-go"
 	"github.com/yagince/gitx"
 	"regexp"
@@ -90,10 +91,11 @@ func (c Context) SelectedLog() *gitx.Reflog {
 
 func drawLine(x, y int, str string, color termbox.Attribute) {
 	backgroundColor := termbox.ColorDefault
-	runes := []rune(str)
 
-	for i := 0; i < len(runes); i += 1 {
-		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	offset := 0
+	for _, c := range []rune(str) {
+		termbox.SetCell(x+offset, y, c, color, backgroundColor)
+		offset += runewidth.RuneWidth(c)
 	}
 }
 
