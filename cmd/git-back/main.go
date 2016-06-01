@@ -160,12 +160,14 @@ func pollEvent(context *Context, ch chan<- bool) {
 				ch <- true
 				return
 			case termbox.KeyEnter:
-				clear()
-				drawLine(1, 1, context.SelectedLog().String(), termbox.ColorCyan)
-				flush()
-				time.Sleep(3 * time.Second)
-				ch <- true
-				return
+				if out, err := context.git.CheckOut(context.SelectedLog().History); err != nil {
+					clear()
+					drawLine(1, 1, string(out), termbox.ColorRed)
+					flush()
+				} else {
+					ch <- true
+					return
+				}
 			default:
 				context.AddQuery(ev.Ch)
 				drawWithKey(ev.Key, context)
